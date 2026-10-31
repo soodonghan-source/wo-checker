@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1A3B7B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="작지 검증">
+<title>작지 BOM 검증</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">작지 BOM 검증<small>생산팀 · 작업지시서 분출 전 확인</small></div>
+  <div id="dbBadge" class="badge">BOM 데이터 없음</div>
+</header>
+
+<main>
+  <!-- 홈 -->
+  <section id="home" class="screen active">
+    <button id="btnScan" class="btn main" disabled>📷 작지 검증하기</button>
+    <div class="row2">
+      <label class="btn sub">🖼 사진 선택<input type="file" id="photoFile" accept="image/*" hidden></label>
+      <button id="btnManual" class="btn sub">⌨ 품번 입력</button>
+    </div>
+
+    <div class="card">
+      <h2>1) BOM 데이터 — 검증 기준</h2>
+      <p id="dbInfo" class="muted">불러온 BOM 데이터가 없습니다.</p>
+      <label class="btn mini" style="margin-top:8px">BOM 데이터 불러오기<input type="file" id="dbFile" accept=".gz,.json,application/json,application/gzip" hidden></label>
+    </div>
+
+    <div class="card">
+      <h2>2) 최근 검증 <button id="btnXlsx" class="btn mini">⬇ 엑셀</button></h2>
+      <ul id="history"><li class="muted">검증 이력이 없습니다.</li></ul>
+    </div>
+
+    <p class="foot">작지를 네모칸에 맞추면 자동 촬영 → 품번·품명·구성품을 읽어 현재 BOM과 대조합니다. 사진과 BOM 데이터는 폰 밖으로 나가지 않습니다(글자 인식도 폰 안에서 처리).</p>
+  </section>
+
+  <!-- 분석 중 -->
+  <section id="busy" class="screen">
+    <div class="spinner"></div>
+    <p id="busyText">글자 읽는 중…</p>
+    <div class="prog"><i id="busyBar"></i></div>
+    <p class="muted">처음 한 번은 글자 인식 엔진(약 11MB)을 받느라 시간이 더 걸립니다.</p>
+  </section>
+
+  <!-- 결과 -->
+  <section id="result" class="screen">
+    <div id="verdict" class="verdict"></div>
+    <div id="imgWrap" class="imgWrap"><canvas id="out"></canvas></div>
+    <div class="imgTools"><button id="btnZoom" class="btn mini">🔍 확대</button></div>
+    <div id="detail"></div>
+    <div class="actions">
+      <button id="btnAgain" class="btn go">📷 다시 찍기</button>
+      <button id="btnSave" class="btn sub">💾 이미지 저장</button>
+      <button id="btnFix" class="btn sub">✏ 품번 변경</button>
+    </div>
+  </section>
+</main>
+
+<!-- 카메라 -->
+<section id="camera" class="screen">
+  <video id="video" playsinline muted autoplay></video>
+  <div id="guide"><i></i><i></i><i></i><i></i><div class="bar" id="guideBar"></div></div>
+  <div id="camHint">작지를 네모칸에 맞춰 주세요</div>
+  <div id="camSub"></div>
+  <div class="flash" id="flash"></div>
+  <div class="camBar">
+    <button id="btnCamClose">✕ 닫기</button>
+    <button id="btnShutter" class="shutter" aria-label="촬영"></button>
+    <button id="btnRotate">▯ 세로칸</button>
+  </div>
+</section>
+
+<dialog id="dlgManual">
+  <h3>작지 품번(SAP 자재번호 7자리)</h3>
+  <input id="inManual" inputmode="numeric" maxlength="7" placeholder="7자리 SAP 품번" autocomplete="off">
+  <p class="muted" id="manualNote">사진 없이 입력하면 현재 BOM 자체만 검증합니다.</p>
+  <div class="row2">
+    <button id="btnManualCancel" class="btn sub">취소</button>
+    <button id="btnManualOk" class="btn main" style="margin:0;font-size:16px;padding:14px">검증</button>
+  </div>
+</dialog>
+<div id="toast"></div>
+
+<script src="vendor/tesseract/tesseract.min.js"></script>
+<script src="vendor/xlsx.mini.min.js" defer></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
